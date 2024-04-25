@@ -130,6 +130,14 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+        .edit-task {
+            background-color: green;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
 
         .delete-task:hover {
             background-color: #bd2130;
@@ -151,7 +159,12 @@
             <%= task %>
             <form method="post" action="">
                 <input type="hidden" name="taskDescription" value="<%= task %>">
-                <input type="submit" class="delete-task" value="Delete" onclick="return confirm('Are you sure you want to delete this task?');">
+                <input type="submit" class="delete-task" value="Delete" name="deleteTask" onclick="return confirm('Are you sure you want to delete this task?');">
+            </form>
+            <form method="post" action="">
+                <input type="hidden" name="taskDescription" value="<%= task %>">
+                <input type="text" name="new-task" >
+                <input type="submit" class="edit-task" value="edit" name="editTask" onclick="return confirm('Are you sure you want to delete this task?');">
             </form>
         </li>
         <% }
@@ -164,6 +177,8 @@
 <%
     // Handle task deletion
     String taskDescriptionToDelete = request.getParameter("taskDescription");
+    String deletetask = request.getParameter("deleteTask");
+    if (deletetask != null){
     if (taskDescriptionToDelete != null) {
         try {
             // database connection
@@ -190,6 +205,39 @@
             response.sendRedirect(request.getRequestURI());
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+        }
+    }}
+    String taskDescriptionToEdit = request.getParameter("taskDescription");
+    String editTaskClicked = request.getParameter("editTask");
+    String newtask = request.getParameter("new-task");
+    if (editTaskClicked != null){
+        if (taskDescriptionToEdit != null) {
+            try {
+                // database connection
+                String hostname = "localhost";
+                String port = "3306";
+                String usern = "root";
+                String password = "root";
+                String schema = "db";
+                // using jdbc to connect to database
+                Class.forName("com.mysql.cj.jdbc.Driver");
+
+                String connectionUrl = String.format("jdbc:mysql://%s:%s/%s?useSSL=false", hostname, port, schema);
+                Connection connection = DriverManager.getConnection(connectionUrl, usern, password);
+                String deleteSql = "UPDATE tasks SET task = ? WHERE task = ?";
+                PreparedStatement deleteStatement = connection.prepareStatement(deleteSql);
+                deleteStatement.setString(1, newtask);
+                deleteStatement.setString(2, taskDescriptionToEdit);
+                int rowsAffected = deleteStatement.executeUpdate();
+
+                // Close resources
+                deleteStatement.close();
+                connection.close();
+
+
+            } catch (SQLException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 %>
