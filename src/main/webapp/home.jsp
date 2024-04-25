@@ -164,7 +164,7 @@
             <form method="post" action="">
                 <input type="hidden" name="taskDescription" value="<%= task %>">
                 <input type="text" name="new-task" >
-                <input type="submit" class="edit-task" value="edit" name="editTask" onclick="return confirm('Are you sure you want to delete this task?');">
+                <input type="submit" class="edit-task" value="edit" name="editTask" onclick="return confirm('Are you sure you want to edit this task?');">
             </form>
         </li>
         <% }
